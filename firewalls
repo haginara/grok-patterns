@@ -2,9 +2,9 @@
 NETSCREENSESSIONLOG %{SYSLOGTIMESTAMP:date} %{IPORHOST:device} %{IPORHOST}: NetScreen device_id=%{WORD:device_id}%{DATA}: start_time=%{QUOTEDSTRING:start_time} duration=%{INT:duration} policy_id=%{INT:policy_id} service=%{DATA:service} proto=%{INT:proto} src zone=%{WORD:src_zone} dst zone=%{WORD:dst_zone} action=%{WORD:action} sent=%{INT:sent} rcvd=%{INT:rcvd} src=%{IPORHOST:src_ip} dst=%{IPORHOST:dst_ip} src_port=%{INT:src_port} dst_port=%{INT:dst_port} src-xlated ip=%{IPORHOST:src_xlated_ip} port=%{INT:src_xlated_port} dst-xlated ip=%{IPORHOST:dst_xlated_ip} port=%{INT:dst_xlated_port} session_id=%{INT:session_id} reason=%{GREEDYDATA:reason}
 
 #== Cisco ASA ==
+CISCO_TAGGED_SYSLOG ^<%{POSINT:syslog_pri}>%{CISCOTIMESTAMP:timestamp}( %{SYSLOGHOST:sysloghost})?: %%{CISCOTAG:ciscotag}:
 CISCOTIMESTAMP %{MONTH} +%{MONTHDAY}(?: %{YEAR})? %{TIME}
 CISCOTAG [A-Z0-9]+-%{INT}-(?:[A-Z0-9_]+)
-CISCO_TAGGED_SYSLOG ^<%{POSINT:syslog_pri}>%{CISCOTIMESTAMP:timestamp}( %{SYSLOGHOST:sysloghost})?: %%{CISCOTAG:ciscotag}:
 # Common Particles
 CISCO_ACTION Built|Teardown|Deny|Denied|denied|requested|permitted|denied by ACL|discarded|est-allowed|Dropping|created|deleted
 CISCO_REASON Duplicate TCP SYN|Failed to locate egress interface|Invalid transport field|No matching connection|DNS Response|DNS Query|(?:%{WORD}\s*)*
@@ -58,20 +58,26 @@ CISCOFW713172 Group = %{GREEDYDATA:group}, IP = %{IP:src_ip}, Automatic NAT Dete
 # ASA-4-733100
 CISCOFW733100 \[\s*%{DATA:drop_type}\s*\] drop %{DATA:drop_rate_id} exceeded. Current burst rate is %{INT:drop_rate_current_burst} per second, max configured rate is %{INT:drop_rate_max_burst}; Current average rate is %{INT:drop_rate_current_avg} per second, max configured rate is %{INT:drop_rate_max_avg}; Cumulative total count is %{INT:drop_total_count}
 
+#Embryonic status message
+EMBRYONIC_STATUS Embryonic limit exceeded|Embryonic connection limit exceeded|Per-client embryonic connection limit exceeded
+
 # ASA-2-201003
-EMBRYONIC_STATUS Embryonic limit exceeded|Embryonic connection limit exceeded
 CISCOFW2201003 %{EMBRYONIC_STATUS:emb_status} %{INT:nconns}/%{INT:elimit} for %{IP:src_ip}/%{INT:src_port} %{IP:dst_ip}/%{INT:dst_port} on interface %{WORD:dst_interface}
 # ASA-6-201010
 CISCOFW6201010 %{EMBRYONIC_STATUS:emb_status} %{INT:econns}/%{INT:limit} for %{WORD:direction} packet from %{IP:src_ip}/%{INT:src_port} to %{IP:dst_ip}/%{INT:dst_port} on interface %{WORD:dst_interface}
+# ASA-5-201012
+CISCOFW5201012 %{EMBRYONIC_STATUS:emb_status} %{INT:exceed}/%{INT:limit} for input packet from %{IP:src_ip}/%{INT:src_port} to %{IP:dst_ip}/%{INT:dst_port} on interface %{WORD:interface}
 
+# ASA-6-716001
+CISCOVPN716001 Group <%{WORD:group}> User <%{WORD:user}> IP <%{IP:src_ip}> WebVPN session %{WORD:vpn_status}
+# ASA-6-716002
+CISCOVPN716002 Group <%{WORD:group}> User <%{WORD:user}> IP <%{IP:src_ip}> WebVPN session %{WORD:vpn_status}: %{GREEDYDATA:reason}
 # ASA-6-716003
-CISCOVPN716003 Group <%{WORD:group}> User <%{WORD:user}> IP <%{IP:src_ip}> %{GREEDYDATA:status}: %{GREEDYDATA:message}
+CISCOVPN716003 Group <%{WORD:group}> User <%{WORD:user}> IP <%{IP:src_ip}> WebVPN access %{WORD:vpn_status}: %{GREEDYDATA:url}
+# ASA-6-716038
+CISCOVPN716038 Group <%{WORD:group}> User <%{WORD:user}> IP <%{IP:src_ip}> Authentication: successful, Session Type: WebVPN.
 # ASA-6-721018
 CISCOVPN721018 (%{GREEDYDATA:device}) WebVPN session for client user %{WORD:user}, IP %{IP:src_ip} has been deleted.
 # ASA-4-113019
 CISCOVPN113019 Group = %{WORD:group}, Username = %{WORD:user}, IP = %{IP:src_ip}, %{GREEDYDATA:session}. Session Type: %{WORD:session_type}, Duration: %{GREEDYDATA:duration}, Bytes xmt: %{INT:session_xmt}, Bytes rcv: %{INT:session_rcv}, Reason: %{GREEDYDATA:session_reason}
-# ASA_VPN_unit
-CISCOVPNUNIT (VPN-unit) %{GREEDYDATA:vpn_message}
-#ASA_VPN_CLIENT
-CISCOVPNCLIENT VPN Client: %{GREEDYDATA_vpn_message}
 #== End Cisco ASA ==
