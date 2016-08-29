@@ -80,4 +80,17 @@ CISCOVPN716038 Group <%{WORD:group}> User <%{WORD:user}> IP <%{IP:src_ip}> Authe
 CISCOVPN721018 (%{GREEDYDATA:device}) WebVPN session for client user %{WORD:user}, IP %{IP:src_ip} has been deleted.
 # ASA-4-113019
 CISCOVPN113019 Group = %{WORD:group}, Username = %{WORD:user}, IP = %{IP:src_ip}, %{GREEDYDATA:session}. Session Type: %{WORD:session_type}, Duration: %{GREEDYDATA:duration}, Bytes xmt: %{INT:session_xmt}, Bytes rcv: %{INT:session_rcv}, Reason: %{GREEDYDATA:session_reason}
+
+# ASA-6-716058
+# Group group User user IP ip AnyConnect session lost connection. Waiting to resume.
+CISCOAC716058 Group <%{DATA:group}> User <%{WORD:user}> IP <%{IP:src_ip}> AnyConnect session lost connection. Waiting to resume.
+# ASA-6-113039
+# Group group User user IP ipaddr AnyConnect parent session started.
+CISCOAC113039 Group <%{DATA:group}> User <%{WORD:user}> IP <%{IP:src_ip}> AnyConnect parent session started.
+# ASA-4-113019
+# Group = group, Username = username, IP = peer_address, Session disconnected. Session Type: type, Duration: duration, Bytes xmt: count, Bytes rcv: count, Reason: reason
+CISCOAC113019 Group = %{DATA:group}, Username = %{WORD:user}, IP = %{IP:src_ip}, Session disconnected. Session Type: %{DATA:session_type}, Duration: %{GREEDYDATA:duration}, Bytes xmt: %{INT:session_xmt}, Bytes rcv: %{INT:session_rcv}, Reason: %{GREEDYDATA:reason}
+# ASA-6-734001
+# DAP: User user, Addr ipaddr, Connection connection : The following DAP records were selected for this connection: DAP record names
+CISCOAC734001 DAP: User %{WORD:user}, Addr %{IP:src_ip}, Connection %{WORD:connection}: The following DAP records were selected for this connection: %{DATA:dap_connection}
 #== End Cisco ASA ==
