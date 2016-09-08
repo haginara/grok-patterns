@@ -1,0 +1,1 @@
+PA_SYSTEM_GP_DESC %{GREEDYDATA:description}\. %{GREEDYDATA:desckv}
